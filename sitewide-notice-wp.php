@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Sitewide Notice WP
  * Description: Simply add a notification bar to the bottom of your WordPress website.
- * Plugin URI: https://www.arctek.co.za
+ * Plugin URI: https://yoohooplugins.com
  * Version: 2.0.0
- * Author: Arctek Technologies (Pty) Ltd.
- * Author URI: https://www.arctek.co.za
+ * Author: YooHoo Plugins
+ * Author URI: https://yoohooplugins.com
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: sitewide-notice-wp
@@ -27,15 +27,16 @@
 
 defined( 'ABSPATH' ) or exit;
 
-class Sitewide_Notice_WP {
+
+/**
+ * INCLUDES
+ */
+include 'sitewide-notice-settings.php'; //all admin code can be found in here.
+
+class SiteWide_Notice_WP {
 
 	/** Refers to a single instance of this class. */
     private static $instance = null;
-
-    /**
-    * Initializes the plugin by setting localization, filters, and administration functions.
-    */
-    private function __construct() {}
 
     /**
     * Creates or returns an instance of this class.
@@ -45,14 +46,25 @@ class Sitewide_Notice_WP {
     public static function get_instance() {
         if ( null == self::$instance ) {
             self::$instance = new self;
+            self::$instance->hooks();
         }
         return self::$instance;
     } // end get_instance;
 
     /**
-    * Functions go here.
+    * Initializes the plugin by setting localization, filters, and administration functions.
     */
-}
+    private function __construct() {
+
+    } //end of construct
+
+
+    private static function hooks() {
+
+    }
+
+
+} //end of class
 
 Sitewide_Notice_WP::get_instance();
 
