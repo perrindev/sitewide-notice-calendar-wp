@@ -36,7 +36,7 @@ class SiteWide_Notice_WP_Settings{
      * @since 1.0.0
      * @return void
      */
-    public static function settings_page_content() {
+    public function settings_page_content() {
 
       //check to see if swnza_options exist
       $values = get_option( 'swnza_options', true );

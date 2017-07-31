@@ -60,20 +60,22 @@ class SiteWide_Notice_WP {
 
 
     private static function hooks() {
+        global $pagenow;
+        
         $swnza_options = get_option( 'swnza_options' );
 
-        if( $swnza_options['active'] ) {
+        if( $swnza_options['active'] && !is_admin() && ( $pagenow !== 'wp-login.php' ) ) {
             add_action( 'wp_loaded', array( 'SiteWide_Notice_WP', 'display_sitewide_notice_banner' ) );
             add_action( 'wp_enqueue_scripts', array( 'SiteWide_Notice_WP', 'enqueue_scripts' ) );
             add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'footer_css' ) );
         }
     }
 
-    public function enqueue_scripts() {
+    public static function enqueue_scripts() {
         wp_enqueue_style( 'swnza_css', plugins_url( '/css/swnza.css', __FILE__ ) );
     }
 
-    public function footer_css() {
+    public static function footer_css() {
         $swnza_options = get_option( 'swnza_options' );
         
     ?>
@@ -115,7 +117,7 @@ class SiteWide_Notice_WP {
     <?php
     }
 
-    public function display_sitewide_notice_banner() {
+    public static function display_sitewide_notice_banner() {
         $swnza_options = get_option( 'swnza_options' );
     ?>
 
