@@ -60,10 +60,71 @@ class SiteWide_Notice_WP {
 
 
     private static function hooks() {
+        $swnza_options = get_option( 'swnza_options' );
 
+        if( $swnza_options['active'] ) {
+            add_action( 'wp_loaded', array( 'SiteWide_Notice_WP', 'display_sitewide_notice_banner' ) );
+            add_action( 'wp_enqueue_scripts', array( 'SiteWide_Notice_WP', 'enqueue_scripts' ) );
+            add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'footer_css' ) );
+        }
     }
 
+    public function enqueue_scripts() {
+        wp_enqueue_style( 'swnza_css', plugins_url( '/css/swnza.css', __FILE__ ) );
+    }
 
+    public function footer_css() {
+        $swnza_options = get_option( 'swnza_options' );
+        
+    ?>
+        <style type="text/css">
+
+          .swnza_banner{
+          position:fixed;
+          bottom:0;
+          height:50px;
+          width:100%;
+          background:<?php echo $swnza_options['background_color'] ?>;
+          padding-top:10px;
+          z-index:998;
+          display:block;
+        }
+
+        .swnza_banner p {
+        color: <?php echo $swnza_options['font_color'] ?>;
+        text-align:center;
+        z-index:999;
+        font-size:20px;
+        }
+
+      /*  .closeButton{
+        display:block;
+        position:absolute;
+        top:-10px;
+        right:5px;
+        width:27px;
+        height:27px;
+        background:url('wp-content/plugins/sitewide-notice-wp/images/close-button.png') no-repeat center center;
+        }*/
+
+        /*.closeButton:hover{
+            cursor: hand;
+        }*/
+
+        </style>
+    <?php
+    }
+
+    public function display_sitewide_notice_banner() {
+        $swnza_options = get_option( 'swnza_options' );
+    ?>
+
+        <div class="swnza_banner" id="swnza_banner_id">
+        <p class="something"><?php echo $swnza_options['message'] ?></p>
+        </div>
+
+    <?php
+    }
 } //end of class
 
 Sitewide_Notice_WP::get_instance();
