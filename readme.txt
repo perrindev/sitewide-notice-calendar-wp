@@ -1,9 +1,9 @@
 === Sitewide Notice WP ===
-Contributors: andrewza
-Donate link: https://arctek.co.za
+Contributors: andrewza, travislima, yoohooplugins
+Donate link: https://yoohooplugins.com
 Tags: sitewide banner, site banner, banner, notice, sitewide notice, popup banner, simple banner, website banner, website notice, site notice, site message, website message bar, website bar message, message bar
 Requires at least: 3.5
-Tested up to: 4.5
+Tested up to: 4.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -23,6 +23,7 @@ A lightweight plugin that simply adds a small notification bar that allows you t
 * Choose transparency percentage of the notice bar
 * Add your own text to the message bar
 * Users are able to close the bar by clicking on the 'x'
+* When a user closes the bar, automatically hide this notification bar for 24 hours.
 * Show/hide notice bar by a flick of a switch
 * HTML code supported
 * Custom CSS supported
@@ -73,6 +74,9 @@ Please feel free to contact us for any further questions.
 
 == Upgrade Notice ==
 
+= 2.0.0 =
+* Please update SiteWide Notice WP for bug fixes, improvements and new features.
+
 = 1.0.5 =
 * Please update SiteWide Notice WP
 
@@ -92,6 +96,11 @@ Please feel free to contact us for any further questions.
 * Please update your Sitewide Notice WP to the latest version to ensure the plugin runs correctly.
 
 == Changelog ==
+
+= 2.0.0 =
+* UI interface cleanup.
+* ENHANCEMENT: Hide bar for 24 hours when user closes it.
+* Speed and Security improvement.
 
 = 1.0.5 =
 * BUG FIX: Saved text message showing on wp-login fix.
