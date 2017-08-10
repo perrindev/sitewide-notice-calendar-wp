@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Sitewide Notice WP
- * Description: Simply add a notification bar to the bottom of your WordPress website.
+ * Description: Adds a simple message bar to the front-end of your website.
  * Plugin URI: https://yoohooplugins.com
  * Version: 2.0.0
  * Author: YooHoo Plugins
@@ -73,12 +73,33 @@ class SiteWide_Notice_WP {
 
     public static function enqueue_scripts() {
         wp_enqueue_style( 'swnza_css', plugins_url( '/css/swnza.css', __FILE__ ) );
+        wp_enqueue_script( 'swnza_css', plugins_url( '/js/jquery_cookie.js', __FILE__ ), array( 'jquery' ), '2.1.4', true );
     }
 
     public static function footer_css() {
         $swnza_options = get_option( 'swnza_options' );
-        
+
+        if( $swnza_options[ 'active' ] ) {
+
+
     ?>
+    <!-- SiteWide Notice WP Cookies -->
+    <script type="text/javascript">
+    jQuery(document).ready(function($){
+
+        if( Cookies.get('swnza_hide_banner_cookie') != undefined ) {
+            $('.swnza_banner').hide();
+        }
+        
+        $('#swnza_close_button_link').click(function(){
+          Cookies.set('swnza_hide_banner_cookie', 1, { expires: 1, path: '/' });
+
+          $('.swnza_banner').hide();
+        });
+    }); 
+    </script>
+
+    <!-- SiteWide Notice WP Custom CSS -->
         <style type="text/css">
 
           .swnza_banner{
@@ -99,7 +120,7 @@ class SiteWide_Notice_WP {
         font-size:20px;
         }
 
-      /*  .closeButton{
+        .swnza_close_button{
         display:block;
         position:absolute;
         top:-10px;
@@ -107,25 +128,43 @@ class SiteWide_Notice_WP {
         width:27px;
         height:27px;
         background:url('wp-content/plugins/sitewide-notice-wp/images/close-button.png') no-repeat center center;
-        }*/
+        }
 
-        /*.closeButton:hover{
+        .swnza_close_button:hover{
             cursor: hand;
-        }*/
+        }
 
+        
+      
+
+        <?php if( $swnza_options[ 'show_on_mobile' ] != 1 ) { ?>
+            @media all and (max-width: 500px){
+            .swnza_banner{
+                display: none;
+            }
+        }
+        <?php } ?>
+        /** Sitewide Notice WP Custom CSS **/
+        <?php echo $swnza_options[ 'custom_css' ]; ?>
         </style>
     <?php
+        }
     }
 
     public static function display_sitewide_notice_banner() {
         $swnza_options = get_option( 'swnza_options' );
+
+        if( $swnza_options[ 'active' ] ) {
+        //Code to display the actual banner.
     ?>
 
         <div class="swnza_banner" id="swnza_banner_id">
-        <p class="something"><?php echo $swnza_options['message'] ?></p>
+        <p class="something"><?php echo htmlspecialchars_decode( stripslashes( $swnza_options['message'] ) ); ?></p>
+        <a id="swnza_close_button_link" class="swnza_close_button"></a>
         </div>
 
     <?php
+        }
     }
 } //end of class
 

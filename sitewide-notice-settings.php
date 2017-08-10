@@ -48,6 +48,7 @@ class SiteWide_Notice_WP_Settings{
         'background_color'  =>  'rgba(255,255,255,1)',
         'font_color'  =>  'rgba(0,0,0,1)',
         'message' =>  '',
+        'show_on_mobile'  =>  true,
         );
       }
      
@@ -58,6 +59,12 @@ class SiteWide_Notice_WP_Settings{
           $values['active'] = 1;
         }else{
           $values['active'] = 0;
+        }
+
+        if( isset( $_POST['show_on_mobile'] ) && $_POST['show_on_mobile'] === 'on' ){
+          $values['show_on_mobile'] = 1;
+        }else{
+          $values['show_on_mobile'] = 0;
         }
         
         if( isset( $_POST['background-color'] ) ){
@@ -71,6 +78,10 @@ class SiteWide_Notice_WP_Settings{
         if( isset( $_POST['message'] ) ){
           $values['message'] = htmlspecialchars( $_POST['message'] );
         }
+
+        if( isset( $_POST['custom_css'] ) ){
+          $values['custom_css'] = htmlspecialchars( $_POST['custom_css'] );
+        }
         
         //update the options stored in WordPress
         update_option( 'swnza_options', $values );
@@ -81,35 +92,69 @@ class SiteWide_Notice_WP_Settings{
       <body>
         <div class="wrap">
           <h1 align="left"><?php _e('Sitewide Notice WP' , 'sitewide-notice-wp'); ?></h1> <hr/>
-          <form class="form-horizontal" action="" method="POST">
 
-           <div class="form-group">
-            <label for="active"><?php _e( 'Show Banner', 'sitewide-notice-wp' ); ?></label>
-            <input type="checkbox" name="active" <?php if( $values['active'] ){ ?> checked <?php } ?> /> 
-          </div>
+            <form action="" method="POST">
+            <table class="form-table">
+              <tr valign="top">
+                <th scope="row">
+                    <label for="active"><?php _e( 'Show Banner', 'sitewide-notice-wp' ); ?></label>
+                </th>
+                <td>
+                <input type="checkbox" name="active" <?php if( $values['active'] ){ ?> checked <?php } ?> /> 
+                </td>
+              </tr>
 
-          <div class="form-group">
-            <label for="background-color"><?php _e( 'Background Color', 'sitewide-notice-wp' ); ?></label>
-            <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/> 
-          </div>
+              <tr>
+                <th scope="row">
+                <label for="show_on_mobile"><?php _e( 'Display Banner On Mobile Devices', 'sitewide-notice-wp' ); ?></label>
+                </th>
+                <td>
+                   <input type="checkbox" name="show_on_mobile" <?php if( $values['show_on_mobile'] ){ ?> checked <?php } ?> /> 
+                </td>
+              </tr>
+              
+              <tr>
+              <th scope="row">
+                 <label for="background-color"><?php _e( 'Background Color', 'sitewide-notice-wp' ); ?></label>
+              </th>
+              <td>
+                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/> 
+              </td>
+              </tr>
+             
+             <tr>
+              <th scope="row">
+                <label for="font-color"><?php _e( 'Font Color', 'sitewide-notice-wp' ); ?></label>
+              </th>
+              <td>
+                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/> 
+              </td>
+              </tr>
 
-          <div class="form-group">
-            <label for="font-color"><?php _e( 'Font Color', 'sitewide-notice-wp' ); ?></label>
-            <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/> 
-          </div>
+              <tr>
+              <th scope="row">
+                <label for="message" class="col-sm-2 control-label"><?php _e('Message:', 'sitewide-notice-wp'); ?> </label>
+              </th>
+              <td>
+                <textarea name="message" cols="40" rows="5" ><?php echo stripcslashes( $values['message'] ); ?></textarea>
+              </td>
+              </tr>
 
-          <div class="form-group">
-            <label for="message" class="col-sm-2 control-label"><?php _e('Text message:', 'swnza'); ?> </label>
-            <textarea name="message" cols="40" rows="5" ><?php echo stripcslashes( $values['message'] ); ?></textarea>
-          </div>
+              <tr>
 
-          <br/>
-
-          <div class="form-group">
-            <input type="submit" name="submit" class="button-primary" value="<?php _e( 'Save Settings', 'sitewide-notice-wp' ); ?>"/>
-          </div>
-
-          </div>
+              <th scope="row">
+                <label for="custom_css" class="col-sm-2 control-label"><?php _e('Custom CSS:', 'sitewide-notice-wp'); ?> </label>
+              </th>
+              <td>
+                 <textarea name="custom_css" cols="40" rows="5" ><?php echo  $values['custom_css']; ?></textarea>
+              </td>
+              </tr>
+             
+             <tr>
+              <th scope="row"> 
+              <input type="submit" name="submit" class="button-primary" value="<?php _e( 'Save Settings', 'sitewide-notice-wp' ); ?>"/></th>
+              </tr>
+          </table>
         </form>
         </div>
       </body>
