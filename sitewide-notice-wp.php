@@ -3,7 +3,7 @@
  * Plugin Name: Sitewide Notice WP
  * Description: Adds a simple message bar to the front-end of your website.
  * Plugin URI: https://yoohooplugins.com
- * Version: 2.0.0
+ * Version: 2.0.3.3
  * Author: YooHoo Plugins
  * Author URI: https://yoohooplugins.com
  * License: GPL2 or later
@@ -26,7 +26,6 @@
 **/
 
 defined( 'ABSPATH' ) or exit;
-
 
 /**
  * INCLUDES
@@ -61,13 +60,23 @@ class SiteWide_Notice_WP {
 
     private static function hooks() {
         global $pagenow;
-        
+
+        //run this code regardless if the actual banner is activated or not.
+        add_action( 'init', array( 'SiteWide_Notice_WP', 'init' ) );
+
         $swnza_options = get_option( 'swnza_options' );
 
         if( $swnza_options['active'] && !is_admin() && ( $pagenow !== 'wp-login.php' ) ) {
-            add_action( 'wp_loaded', array( 'SiteWide_Notice_WP', 'display_sitewide_notice_banner' ) );
+            add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'display_sitewide_notice_banner' ) );
             add_action( 'wp_enqueue_scripts', array( 'SiteWide_Notice_WP', 'enqueue_scripts' ) );
             add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'footer_css' ) );
+        }
+    }
+
+    public static function init() {
+
+        if( isset( $_REQUEST['remove_swnza_settings'] ) || !empty( $_REQUEST['remove_swnza_settings'] ) ) {
+            delete_option( 'swnza_options' );
         }
     }
 
@@ -78,6 +87,10 @@ class SiteWide_Notice_WP {
 
     public static function footer_css() {
         $swnza_options = get_option( 'swnza_options' );
+
+				if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
+					return;
+				}
 
         if( $swnza_options[ 'active' ] ) {
 
@@ -90,13 +103,13 @@ class SiteWide_Notice_WP {
         if( Cookies.get('swnza_hide_banner_cookie') != undefined ) {
             $('.swnza_banner').hide();
         }
-        
+
         $('#swnza_close_button_link').click(function(){
-          Cookies.set('swnza_hide_banner_cookie', 1, { expires: 1, path: '/' });
+          Cookies.set('swnza_hide_banner_cookie', 1, { expires: 1, path: '/' }); //expire the cookie after 24 hours.
 
           $('.swnza_banner').hide();
         });
-    }); 
+    });
     </script>
 
     <!-- SiteWide Notice WP Custom CSS -->
@@ -118,6 +131,7 @@ class SiteWide_Notice_WP {
         text-align:center;
         z-index:999;
         font-size:20px;
+				display:block;
         }
 
         .swnza_close_button{
@@ -127,15 +141,15 @@ class SiteWide_Notice_WP {
         right:5px;
         width:27px;
         height:27px;
-        background:url('wp-content/plugins/sitewide-notice-wp/images/close-button.png') no-repeat center center;
+        background:url("<?php echo plugins_url( 'images/close-button.png', __FILE__ ); ?>") no-repeat center center;
         }
 
         .swnza_close_button:hover{
             cursor: hand;
         }
 
-        
-      
+
+
 
         <?php if( $swnza_options[ 'show_on_mobile' ] != 1 ) { ?>
             @media all and (max-width: 500px){
@@ -154,12 +168,25 @@ class SiteWide_Notice_WP {
     public static function display_sitewide_notice_banner() {
         $swnza_options = get_option( 'swnza_options' );
 
-        if( $swnza_options[ 'active' ] ) {
+				// Bail if user is logged in and settings are set to true.
+				if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
+					return;
+				}
+
+        // create a filter to show/hide.
+
+        if( $swnza_options['active'] ) {
+
+            // If show for PMPro members setting is enabled and user doesn't have membership level, return.
+            if( $swnza_options['show_for_members'] && !pmpro_hasMembershipLevel() ) {
+                return;
+            }
+        
         //Code to display the actual banner.
     ?>
 
         <div class="swnza_banner" id="swnza_banner_id">
-        <p class="something"><?php echo htmlspecialchars_decode( stripslashes( $swnza_options['message'] ) ); ?></p>
+        <p id="swnza_banner_text"><?php echo htmlspecialchars_decode( stripslashes( $swnza_options['message'] ) ); ?></p>
         <a id="swnza_close_button_link" class="swnza_close_button"></a>
         </div>
 
@@ -169,4 +196,3 @@ class SiteWide_Notice_WP {
 } //end of class
 
 Sitewide_Notice_WP::get_instance();
-

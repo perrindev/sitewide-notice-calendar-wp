@@ -4,23 +4,23 @@ defined( 'ABSPATH' ) or exit;
 
 class SiteWide_Notice_WP_Settings{
 
-	//all hooks go here
-	public function __construct() {
+  //all hooks go here
+  public function __construct() {
 
-		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		
-	}
+    add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+    add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
-	 public function admin_init() {
+  }
+
+   public function admin_init() {
 
     }
 
     public function admin_enqueue_scripts() {
-		//enable color wheel
-		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'wp-color-alpha', plugins_url( '/js/wp-color-picker-alpha.min.js', __FILE__ ), array( 'wp-color-picker' ), '1.2.2', true );
-	}
+    //enable color wheel
+    wp_enqueue_style( 'wp-color-picker' );
+    wp_enqueue_script( 'wp-color-alpha', plugins_url( '/js/wp-color-picker-alpha.min.js', __FILE__ ), array( 'wp-color-picker' ), '2.1.3', true );
+  }
     /**
      * Adds menu link to WordPress Dashboard
      * @since 1.0.0
@@ -39,22 +39,30 @@ class SiteWide_Notice_WP_Settings{
     public function settings_page_content() {
 
       //check to see if swnza_options exist
-      $values = get_option( 'swnza_options', true );
-      
+      $values = get_option( 'swnza_options' );
+
       //default values
       if( empty( $values ) ){
-        $values = array(
-        'active'  =>  '1',
-        'background_color'  =>  'rgba(255,255,255,1)',
-        'font_color'  =>  'rgba(0,0,0,1)',
-        'message' =>  '',
-        'show_on_mobile'  =>  true,
-        );
+
+        $values = array();
+
+        $values['active'] = '1';
+        $values['background_color'] = 'rgba(255,255,255,1)';
+        $values['font_color'] = 'rgba(0,0,0,1)';
+        $values['message'] = '';
+        $values['show_on_mobile'] = true;
+        $values['hide_for_logged_in'] = false;
+        $values['custom_css'] = '/** Custom CSS For SiteWide Notice WP Goes Here **/';
+
+        if( defined( 'PMPRO_VERSION' ) ){
+          $values['show_for_members'] = false;
+        }
+
       }
-     
+
       //If they have submitted the form.
       if( isset( $_POST['submit'] ) ) {
-        
+
         if( isset( $_POST['active'] ) &&  $_POST['active'] === 'on' ){
           $values['active'] = 1;
         }else{
@@ -66,10 +74,16 @@ class SiteWide_Notice_WP_Settings{
         }else{
           $values['show_on_mobile'] = 0;
         }
-        
+
+        if( isset( $_POST['hide_for_logged_in'] ) && $_POST['hide_for_logged_in'] === 'on' ){
+          $values['hide_for_logged_in'] = 1;
+        }else{
+          $values['hide_for_logged_in'] = 0;
+        }
+
         if( isset( $_POST['background-color'] ) ){
           $values['background_color'] = $_POST['background-color'];
-        }  
+        }
 
         if( isset( $_POST['font-color'] ) ){
           $values['font_color'] = $_POST['font-color'];
@@ -82,12 +96,24 @@ class SiteWide_Notice_WP_Settings{
         if( isset( $_POST['custom_css'] ) ){
           $values['custom_css'] = htmlspecialchars( $_POST['custom_css'] );
         }
-        
+
+        // Check if PMPro exists, and update settings.
+        if( defined( 'PMPRO_VERSION' ) ){
+          if( isset( $_POST['show_for_members'] ) && $_POST['show_for_members'] === 'on' ){
+            $values['show_for_members'] = 1;
+          }else{
+            $values['show_for_members'] = 0;
+          }
+        }
+
         //update the options stored in WordPress
-        update_option( 'swnza_options', $values );
+        if( update_option( 'swnza_options', $values ) ) {
+            SiteWide_Notice_WP_Settings::admin_notices_success();
+        }
+
       }
 
-      ?> 
+      ?>
     <html>
       <body>
         <div class="wrap">
@@ -100,7 +126,7 @@ class SiteWide_Notice_WP_Settings{
                     <label for="active"><?php _e( 'Show Banner', 'sitewide-notice-wp' ); ?></label>
                 </th>
                 <td>
-                <input type="checkbox" name="active" <?php if( $values['active'] ){ ?> checked <?php } ?> /> 
+                <input type="checkbox" name="active" <?php if( $values['active'] ){ ?> checked <?php } ?> />
                 </td>
               </tr>
 
@@ -109,25 +135,45 @@ class SiteWide_Notice_WP_Settings{
                 <label for="show_on_mobile"><?php _e( 'Display Banner On Mobile Devices', 'sitewide-notice-wp' ); ?></label>
                 </th>
                 <td>
-                   <input type="checkbox" name="show_on_mobile" <?php if( $values['show_on_mobile'] ){ ?> checked <?php } ?> /> 
+                   <input type="checkbox" name="show_on_mobile" <?php if( $values['show_on_mobile'] ){ ?> checked <?php } ?> />
                 </td>
               </tr>
-              
+
+              <tr>
+                <th scope="row">
+                <label for="hide_for_logged_in"><?php _e( 'Hide Banner For Logged-in Users', 'sitewide-notice-wp' ); ?></label>
+                </th>
+                <td>
+                   <input type="checkbox" name="hide_for_logged_in" <?php if( $values['hide_for_logged_in'] ){ ?> checked <?php } ?> />
+                </td>
+              </tr>
+
+              <?php if( defined( 'PMPRO_VERSION' ) ) { ?>
+                <tr>
+                  <th scope="row">
+                  <label for="show_for_members"><?php _e( 'Display Banner For PMPro Members', 'sitewide-notice-wp' ); ?></label>
+                  </th>
+                  <td>
+                     <input type="checkbox" name="show_for_members" <?php if( $values['show_for_members'] ){ ?> checked <?php } ?> />
+                  </td>
+                </tr>
+              <?php } ?>
+
               <tr>
               <th scope="row">
                  <label for="background-color"><?php _e( 'Background Color', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/> 
+                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/>
               </td>
               </tr>
-             
+
              <tr>
               <th scope="row">
                 <label for="font-color"><?php _e( 'Font Color', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/> 
+                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/>
               </td>
               </tr>
 
@@ -149,9 +195,9 @@ class SiteWide_Notice_WP_Settings{
                  <textarea name="custom_css" cols="40" rows="5" ><?php echo  $values['custom_css']; ?></textarea>
               </td>
               </tr>
-             
+
              <tr>
-              <th scope="row"> 
+              <th scope="row">
               <input type="submit" name="submit" class="button-primary" value="<?php _e( 'Save Settings', 'sitewide-notice-wp' ); ?>"/></th>
               </tr>
           </table>
@@ -160,7 +206,18 @@ class SiteWide_Notice_WP_Settings{
       </body>
     </html>
        <?php
-    }	
-}
+    }
+
+    private static function admin_notices_success() {
+      ?>
+    <div class="notice notice-success is-dismissible">
+      <p><strong><?php _e( 'Settings saved.' ,'sitewide-notice-wp' ); ?></strong></p>
+      <button type="button" class="notice-dismiss">
+        <span class="screen-reader-text"><?php _e( 'Dismiss this notice.', 'sitewide-notice-wp' ); ?></span>
+      </button>
+    </div>
+    <?php
+    }
+} //end class
 
 $sitewide_notice_settings = new SiteWide_Notice_WP_Settings();
