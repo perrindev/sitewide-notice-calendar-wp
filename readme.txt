@@ -75,9 +75,6 @@ Please feel free to contact us for any further questions.
 
 == Upgrade Notice ==
 
-= 2.0.3.3 =
-* Please upgrade this version for a minor bug fix.
-
 = 2.0.3.2 =
 * Please upgrade to this version for a minor bug fix.
 
@@ -115,9 +112,6 @@ Please feel free to contact us for any further questions.
 * Please update your Sitewide Notice WP to the latest version to ensure the plugin runs correctly.
 
 == Changelog ==
-
-= 2.0.3.3 =
-* Bug fix for close button not showing up correctly.
 
 = 2.0.3.2 =
 * Bug fix with the color picker library.

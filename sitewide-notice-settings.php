@@ -52,8 +52,7 @@ class SiteWide_Notice_WP_Settings{
         $values['message'] = '';
         $values['show_on_mobile'] = true;
         $values['hide_for_logged_in'] = false;
-        $values['custom_css'] = '/** Custom CSS For SiteWide Notice WP Goes Here **/';
-
+        $values['show_on_top'] = false;
         if( defined( 'PMPRO_VERSION' ) ){
           $values['show_for_members'] = false;
         }
@@ -79,6 +78,12 @@ class SiteWide_Notice_WP_Settings{
           $values['hide_for_logged_in'] = 1;
         }else{
           $values['hide_for_logged_in'] = 0;
+        }
+
+        if( isset( $_POST['show_on_top'] ) && $_POST['show_on_top'] === 'on' ){
+          $values['show_on_top'] = 1;
+        }else{
+          $values['show_on_top'] = 0;
         }
 
         if( isset( $_POST['background-color'] ) ){
@@ -122,11 +127,11 @@ class SiteWide_Notice_WP_Settings{
             <form action="" method="POST">
             <table class="form-table">
               <tr valign="top">
-                <th scope="row">
+                <th scope="row" width="50%">
                     <label for="active"><?php _e( 'Show Banner', 'sitewide-notice-wp' ); ?></label>
                 </th>
-                <td>
-                <input type="checkbox" name="active" <?php if( $values['active'] ){ ?> checked <?php } ?> />
+                <td width="50%">
+                <input type="checkbox" name="active" <?php if( isset( $values['active'] ) && ! empty( $values['active'] ) ){ echo 'checked'; } ?> />
                 </td>
               </tr>
 
@@ -135,7 +140,7 @@ class SiteWide_Notice_WP_Settings{
                 <label for="show_on_mobile"><?php _e( 'Display Banner On Mobile Devices', 'sitewide-notice-wp' ); ?></label>
                 </th>
                 <td>
-                   <input type="checkbox" name="show_on_mobile" <?php if( $values['show_on_mobile'] ){ ?> checked <?php } ?> />
+                   <input type="checkbox" name="show_on_mobile" <?php if( isset( $values['show_on_mobile'] ) && ! empty( $values['show_on_mobile'] ) ){ echo 'checked'; } ?> />
                 </td>
               </tr>
 
@@ -144,8 +149,16 @@ class SiteWide_Notice_WP_Settings{
                 <label for="hide_for_logged_in"><?php _e( 'Hide Banner For Logged-in Users', 'sitewide-notice-wp' ); ?></label>
                 </th>
                 <td>
-                   <input type="checkbox" name="hide_for_logged_in" <?php if( $values['hide_for_logged_in'] ){ ?> checked <?php } ?> />
+                   <input type="checkbox" name="hide_for_logged_in" <?php if( isset( $values['hide_for_logged_in'] ) && ! empty( $values['hide_for_logged_in'] ) ){ echo 'checked'; } ?> />
                 </td>
+              </tr>
+
+
+              <tr>
+                <th scope="row">
+                  <label for="show_on_top"><?php _e( 'Show Banner On Top Of Screen', 'sitewide-notice-wp' ); ?></label>
+                </th>
+                <td><input type="checkbox" name="show_on_top" <?php if( isset( $values['show_on_top'] ) && ! empty( $values['show_on_top'] ) ) { echo 'checked'; } ?>/></td>
               </tr>
 
               <?php if( defined( 'PMPRO_VERSION' ) ) { ?>
@@ -154,7 +167,7 @@ class SiteWide_Notice_WP_Settings{
                   <label for="show_for_members"><?php _e( 'Display Banner For PMPro Members', 'sitewide-notice-wp' ); ?></label>
                   </th>
                   <td>
-                     <input type="checkbox" name="show_for_members" <?php if( $values['show_for_members'] ){ ?> checked <?php } ?> />
+                     <input type="checkbox" name="show_for_members" <?php if( isset( $values['show_for_members'] ) && ! empty( $values['show_for_members'] ) ){ echo 'checked'; } ?> />
                   </td>
                 </tr>
               <?php } ?>
@@ -183,16 +196,6 @@ class SiteWide_Notice_WP_Settings{
               </th>
               <td>
                 <textarea name="message" cols="40" rows="5" ><?php echo stripcslashes( $values['message'] ); ?></textarea>
-              </td>
-              </tr>
-
-              <tr>
-
-              <th scope="row">
-                <label for="custom_css" class="col-sm-2 control-label"><?php _e('Custom CSS:', 'sitewide-notice-wp'); ?> </label>
-              </th>
-              <td>
-                 <textarea name="custom_css" cols="40" rows="5" ><?php echo  $values['custom_css']; ?></textarea>
               </td>
               </tr>
 

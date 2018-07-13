@@ -3,8 +3,8 @@
  * Plugin Name: Sitewide Notice WP
  * Description: Adds a simple message bar to the front-end of your website.
  * Plugin URI: https://yoohooplugins.com
- * Version: 2.0.3.3
- * Author: YooHoo Plugins
+ * Version: 2.0.4
+ * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -34,7 +34,7 @@ include 'sitewide-notice-settings.php'; //all admin code can be found in here.
 
 class SiteWide_Notice_WP {
 
-	/** Refers to a single instance of this class. */
+    /** Refers to a single instance of this class. */
     private static $instance = null;
 
     /**
@@ -69,7 +69,6 @@ class SiteWide_Notice_WP {
         if( $swnza_options['active'] && !is_admin() && ( $pagenow !== 'wp-login.php' ) ) {
             add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'display_sitewide_notice_banner' ) );
             add_action( 'wp_enqueue_scripts', array( 'SiteWide_Notice_WP', 'enqueue_scripts' ) );
-            add_action( 'wp_footer', array( 'SiteWide_Notice_WP', 'footer_css' ) );
         }
     }
 
@@ -85,105 +84,90 @@ class SiteWide_Notice_WP {
         wp_enqueue_script( 'swnza_css', plugins_url( '/js/jquery_cookie.js', __FILE__ ), array( 'jquery' ), '2.1.4', true );
     }
 
-    public static function footer_css() {
-        $swnza_options = get_option( 'swnza_options' );
+    public static function display_sitewide_notice_banner() {
+       $swnza_options = get_option( 'swnza_options' );
 
-				if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
-					return;
-				}
+        if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
+            return;
+        }
 
         if( $swnza_options[ 'active' ] ) {
 
-
-    ?>
-    <!-- SiteWide Notice WP Cookies -->
-    <script type="text/javascript">
-    jQuery(document).ready(function($){
-
-        if( Cookies.get('swnza_hide_banner_cookie') != undefined ) {
-            $('.swnza_banner').hide();
-        }
-
-        $('#swnza_close_button_link').click(function(){
-          Cookies.set('swnza_hide_banner_cookie', 1, { expires: 1, path: '/' }); //expire the cookie after 24 hours.
-
-          $('.swnza_banner').hide();
-        });
-    });
-    </script>
-
-    <!-- SiteWide Notice WP Custom CSS -->
-        <style type="text/css">
-
-          .swnza_banner{
-          position:fixed;
-          bottom:0;
-          height:50px;
-          width:100%;
-          background:<?php echo $swnza_options['background_color'] ?>;
-          padding-top:10px;
-          z-index:998;
-          display:block;
-        }
-
-        .swnza_banner p {
-        color: <?php echo $swnza_options['font_color'] ?>;
-        text-align:center;
-        z-index:999;
-        font-size:20px;
-				display:block;
-        }
-
-        .swnza_close_button{
-        display:block;
-        position:absolute;
-        top:-10px;
-        right:5px;
-        width:27px;
-        height:27px;
-        background:url("<?php echo plugins_url( 'images/close-button.png', __FILE__ ); ?>") no-repeat center center;
-        }
-
-        .swnza_close_button:hover{
-            cursor: hand;
-        }
-
-
-
-
-        <?php if( $swnza_options[ 'show_on_mobile' ] != 1 ) { ?>
-            @media all and (max-width: 500px){
-            .swnza_banner{
-                display: none;
-            }
-        }
-        <?php } ?>
-        /** Sitewide Notice WP Custom CSS **/
-        <?php echo $swnza_options[ 'custom_css' ]; ?>
-        </style>
-    <?php
-        }
-    }
-
-    public static function display_sitewide_notice_banner() {
-        $swnza_options = get_option( 'swnza_options' );
-
-				// Bail if user is logged in and settings are set to true.
-				if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
-					return;
-				}
-
-        // create a filter to show/hide.
-
-        if( $swnza_options['active'] ) {
-
             // If show for PMPro members setting is enabled and user doesn't have membership level, return.
-            if( $swnza_options['show_for_members'] && !pmpro_hasMembershipLevel() ) {
+            if( isset( $swnza_options['show_for_members'] ) && ! empty( $swnza_options['show_for_members'] ) && !pmpro_hasMembershipLevel() ) {
                 return;
-            }
-        
-        //Code to display the actual banner.
-    ?>
+            } ?>
+
+            <!-- SiteWide Notice WP Cookies -->
+            <script type="text/javascript">
+            jQuery(document).ready(function($){
+
+                if( Cookies.get('swnza_hide_banner_cookie') != undefined ) {
+                    $('.swnza_banner').hide();
+                }
+
+                $('#swnza_close_button_link').click(function(){
+                  Cookies.set('swnza_hide_banner_cookie', 1, { expires: 1, path: '/' }); //expire the cookie after 24 hours.
+
+                  $('.swnza_banner').hide();
+                });
+            });
+            </script>
+
+            <!-- SiteWide Notice WP Custom CSS -->
+                <style type="text/css">
+                    .swnza_banner{
+                        position:fixed;
+                        height:50px;
+                        width:100%;
+                        background:<?php echo $swnza_options['background_color'] ?>;
+                        padding-top:10px;
+                        z-index:999;
+                        display:block;
+                    }  
+
+                    <?php if( $swnza_options['show_on_top'] ) { ?>
+                        .admin-bar .swnza_banner { margin-top:32px; }
+                        .swnza_banner { top:0; }
+                        .swnza_close_button { bottom:-10px; }
+                    <?php } else { ?> 
+                        .swnza_banner{ bottom:0; }
+                        .swnza_close_button { top:-10px;}
+                    <?php } ?>   
+
+                    .swnza_banner p {
+                        color: <?php echo $swnza_options['font_color'] ?>;
+                        text-align:center;
+                        z-index:1000;
+                        font-size:20px;
+                        display:block;
+                    }
+
+                    .swnza_close_button{
+                        display:block;
+                        position:absolute;
+                        right:5px;
+                        width:20px;
+                        height:20px;
+                        background:url("<?php echo plugins_url( 'images/close-button.svg', __FILE__ ); ?>") no-repeat center center;
+                        background-color:white;
+                        border-radius:100px;
+                        border: 1px solid #000;
+                    }
+
+                    .swnza_close_button:hover{
+                        cursor: pointer;
+                    }
+
+                <?php if( $swnza_options[ 'show_on_mobile' ] != 1 ) { ?>
+                    @media all and (max-width: 500px){
+                    .swnza_banner{
+                        display: none;
+                    }
+                }
+                <?php } ?>
+                </style>
+                <?php } ?>
 
         <div class="swnza_banner" id="swnza_banner_id">
         <p id="swnza_banner_text"><?php echo htmlspecialchars_decode( stripslashes( $swnza_options['message'] ) ); ?></p>
@@ -191,7 +175,6 @@ class SiteWide_Notice_WP {
         </div>
 
     <?php
-        }
     }
 } //end of class
 
