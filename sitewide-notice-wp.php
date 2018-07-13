@@ -87,7 +87,7 @@ class SiteWide_Notice_WP {
     public static function display_sitewide_notice_banner() {
        $swnza_options = get_option( 'swnza_options' );
 
-        if( $swnza_options[ 'hide_for_logged_in' ] && is_user_logged_in() ) {
+        if( ( isset( $swnza_options[ 'hide_for_logged_in' ] ) && ! empty( $swnza_options['hide_for_logged_in'] ) ) && is_user_logged_in() ) {
             return;
         }
 
@@ -126,7 +126,7 @@ class SiteWide_Notice_WP {
                         display:block;
                     }  
 
-                    <?php if( $swnza_options['show_on_top'] ) { ?>
+                    <?php if( isset( $swnza_options['show_on_top'] ) && ! empty( $swnza_options['show_on_top'] ) ) { ?>
                         .admin-bar .swnza_banner { margin-top:32px; }
                         .swnza_banner { top:0; }
                         .swnza_close_button { bottom:-10px; }
