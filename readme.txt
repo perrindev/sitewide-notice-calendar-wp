@@ -3,7 +3,7 @@ Contributors: andrewza, travislima, yoohooplugins
 Donate link: https://yoohooplugins.com
 Tags: sitewide banner, site banner, banner, notice, sitewide notice, popup banner, simple banner, website banner, website notice, site notice, site message, website message bar, website bar message, message bar
 Requires at least: 3.5
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,17 +17,18 @@ Simply add a small message bar to the bottom of each page of your website to dis
 A lightweight plugin that simply adds a small notification bar that allows you to insert simple text at the bottom of every page of your website as a call-to-action.
 
 = Features =
-* Lightweight code that does not slow down your website
-* Choose color of font 
-* Choose color of background for the bar
-* Choose transparency percentage of the notice bar
-* Add your own text to the message bar
-* Users are able to close the bar by clicking on the 'x'
+* Lightweight code that does not slow down your website.
+* Choose color of font. (Includes transparency). 
+* Choose color of background for the bar. (Includes transparency). 
+* Add your own text to the message bar.
+* Users are able to close the bar by clicking on the ‘x’.
 * When a user closes the bar, automatically hide this notification bar for 24 hours.
-* Show/hide notice bar by a flick of a switch
-* HTML code supported
-* Custom CSS supported
-* Hide on mobile devices
+* Show/hide notice bar with a checkbox.
+* HTML code supported.
+* Custom CSS supported.
+* Hide set wide message on mobile devices.
+* Hide site wide message for logged in users.
+* Integrates with [Paid Memberships Pro](https://paidmembershipspro.com) - show banner only to members.
 
 == Installation ==
 
@@ -74,6 +75,21 @@ Please feel free to contact us for any further questions.
 
 == Upgrade Notice ==
 
+= 2.0.3.2 =
+* Please upgrade to this version for a minor bug fix.
+
+= 2.0.3.1 =
+* Please upgrade to this version for a minor bug fix.
+
+= 2.0.3 =
+* Please upgrade SiteWide Notice WP for new features.
+
+= 2.0.2 =
+* Please upgrade SiteWide Notice WP for bug fixes, improvements and new features.
+
+= 2.0.1 =
+* Please update SiteWide Notice WP for bug fixes, improvements and new features.
+
 = 2.0.0 =
 * Please update SiteWide Notice WP for bug fixes, improvements and new features.
 
@@ -96,6 +112,23 @@ Please feel free to contact us for any further questions.
 * Please update your Sitewide Notice WP to the latest version to ensure the plugin runs correctly.
 
 == Changelog ==
+
+= 2.0.3.2 =
+* Bug fix with the color picker library.
+
+= 2.0.3.1 =
+* Bug fix where WooCommerce checkout would hang.
+
+
+= 2.0.3 =
+* ENHANCEMENT: Integrate with Paid Memberships Pro.
+
+= 2.0.2 =
+* BUG FIX: text would appear before page load.
+* ENHANCEMENT: hide site wide notice message from logged in users option.
+
+= 2.0.1 =
+* Fixed missing files bug.
 
 = 2.0.0 =
 * UI interface cleanup.

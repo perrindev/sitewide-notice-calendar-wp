@@ -1,3 +1,4 @@
 /**
  * Custom CSS for SiteWide Notice WP found in this file.
  */
+ .swnza_banner p, .swnza_banner{ display:none; } /** Hide text by default **/
