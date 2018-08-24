@@ -12,6 +12,26 @@ class SiteWide_Notice_WP_Settings{
 
   }
 
+  	/**
+  	 * Sanitize function for hex + rgba colors.
+  	 * Reference: https://wordpress.stackexchange.com/questions/257581/escape-hexadecimals-rgba-values
+  	 */
+	public static function sanitize_hex_rgba( $color ) {
+		if ( empty( $color ) || is_array( $color ) )
+		return 'rgba(0,0,0,0)';
+
+		// If string does not start with 'rgba', then treat as hex
+		// sanitize the hex color and finally convert hex to rgba
+		if ( false === strpos( $color, 'rgba' ) ) {
+		return sanitize_hex_color( $color );
+		}
+
+		// By now we know the string is formatted as an rgba color so we need to further sanitize it.
+		$color = str_replace( ' ', '', $color );
+		sscanf( $color, 'rgba(%d,%d,%d,%f)', $red, $green, $blue, $alpha );
+		return 'rgba('.$red.','.$green.','.$blue.','.$alpha.')';
+	}
+
    public function admin_init() {
 
     }
@@ -87,19 +107,15 @@ class SiteWide_Notice_WP_Settings{
         }
 
         if( isset( $_POST['background-color'] ) ){
-          $values['background_color'] = $_POST['background-color'];
+          $values['background_color'] = SiteWide_Notice_WP_Settings::sanitize_hex_rgba( $_POST['background-color'] );
         }
 
         if( isset( $_POST['font-color'] ) ){
-          $values['font_color'] = $_POST['font-color'];
+          $values['font_color'] =  SiteWide_Notice_WP_Settings::sanitize_hex_rgba( $_POST['font-color'] );
         }
 
         if( isset( $_POST['message'] ) ){
           $values['message'] = htmlspecialchars( $_POST['message'] );
-        }
-
-        if( isset( $_POST['custom_css'] ) ){
-          $values['custom_css'] = htmlspecialchars( $_POST['custom_css'] );
         }
 
         // Check if PMPro exists, and update settings.
@@ -177,7 +193,7 @@ class SiteWide_Notice_WP_Settings{
                  <label for="background-color"><?php _e( 'Background Color', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/>
+                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo esc_attr( $values['background_color'] ); ?>"/>
               </td>
               </tr>
 
@@ -186,13 +202,13 @@ class SiteWide_Notice_WP_Settings{
                 <label for="font-color"><?php _e( 'Font Color', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/>
+                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo esc_attr( $values['font_color'] ); ?>"/>
               </td>
               </tr>
 
               <tr>
               <th scope="row">
-                <label for="message" class="col-sm-2 control-label"><?php _e('Message:', 'sitewide-notice-wp'); ?> </label>
+                <label for="message" class="col-sm-2 control-label"><?php _e('Message', 'sitewide-notice-wp'); ?> </label>
               </th>
               <td>
                 <textarea name="message" cols="40" rows="5" ><?php echo stripcslashes( $values['message'] ); ?></textarea>
