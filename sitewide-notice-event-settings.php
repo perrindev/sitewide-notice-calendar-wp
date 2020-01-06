@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) or exit;
 
-class SiteWide_Notice_WP_Settings{
+class SiteWide_Notice_Event_WP_Settings{
 
   //all hooks go here
   public function __construct() {
@@ -27,7 +27,7 @@ class SiteWide_Notice_WP_Settings{
      * @return void
      */
     public function admin_menu() {
-        add_menu_page( 'Sitewide Notice', 'Sitewide Notice', 'manage_options', 'sitewide-notice-settings', array( $this, 'settings_page_content' ), 'dashicons-megaphone' );
+        add_menu_page( 'Sitewide Notice Event', 'Sitewide Notice Event', 'manage_options', 'sitewide-notice-event-settings', array( $this, 'settings_page_content' ), 'dashicons-megaphone' );
 
     }
 
@@ -38,8 +38,8 @@ class SiteWide_Notice_WP_Settings{
      */
     public function settings_page_content() {
 
-      //check to see if swnza_options exist
-      $values = get_option( 'swnza_options' );
+      //check to see if swneza_options exist
+      $values = get_option( 'swneza_options' );
 
       //default values
       if( empty( $values ) ){
@@ -47,16 +47,15 @@ class SiteWide_Notice_WP_Settings{
         $values = array();
 
         $values['active'] = '1';
-        $values['background_color'] = 'rgba(255,255,255,1)';
-        $values['font_color'] = 'rgba(0,0,0,1)';
-        $values['message'] = '';
+        $values['background_color_today'] = 'rgba(255,255,255,1)';
+        $values['font_color_today'] = 'rgba(0,0,0,1)';
+        $values['background_color_tomorrow'] = 'rgba(255,255,255,1)';
+        $values['font_color_tomorrow'] = 'rgba(0,0,0,1)';
+        $values['events'] = [];
+        // $values['message'] = '';
         $values['show_on_mobile'] = true;
         $values['hide_for_logged_in'] = false;
         $values['show_on_top'] = false;
-        if( defined( 'PMPRO_VERSION' ) ){
-          $values['show_for_members'] = false;
-        }
-
       }
 
       //If they have submitted the form.
@@ -86,49 +85,51 @@ class SiteWide_Notice_WP_Settings{
           $values['show_on_top'] = 0;
         }
 
-        if( isset( $_POST['background-color'] ) ){
-          $values['background_color'] = $_POST['background-color'];
+        if( isset( $_POST['background-color-today'] ) ){
+          $values['background_color_today'] = $_POST['background-color-today'];
         }
 
-        if( isset( $_POST['font-color'] ) ){
-          $values['font_color'] = $_POST['font-color'];
+        if( isset( $_POST['font-color-today'] ) ){
+          $values['font_color_today'] = $_POST['font-color-today'];
         }
 
-        if( isset( $_POST['message'] ) ){
-          $values['message'] = htmlspecialchars( $_POST['message'] );
+        if( isset( $_POST['background-color-tomorrow'] ) ){
+          $values['background_color_tomorrow'] = $_POST['background-color-tomorrow'];
+        }
+
+        if( isset( $_POST['font-color-tomorrow'] ) ){
+          $values['font_color_tomorrow'] = $_POST['font-color-tomorrow'];
+        }
+
+        // if( isset( $_POST['message'] ) ){
+        //   $values['message'] = htmlspecialchars( $_POST['message'] );
+        // }
+
+        if( isset( $_POST['events'] ) ){
+          $values['events'] = $_POST['events'];
         }
 
         if( isset( $_POST['custom_css'] ) ){
           $values['custom_css'] = htmlspecialchars( $_POST['custom_css'] );
         }
 
-        // Check if PMPro exists, and update settings.
-        if( defined( 'PMPRO_VERSION' ) ){
-          if( isset( $_POST['show_for_members'] ) && $_POST['show_for_members'] === 'on' ){
-            $values['show_for_members'] = 1;
-          }else{
-            $values['show_for_members'] = 0;
-          }
-        }
-
         //update the options stored in WordPress
-        if( update_option( 'swnza_options', $values ) ) {
-            SiteWide_Notice_WP_Settings::admin_notices_success();
+        if( update_option( 'swneza_options', $values ) ) {
+            SiteWide_Notice_Event_WP_Settings::admin_notices_success();
         }
-
       }
 
       ?>
     <html>
       <body>
         <div class="wrap">
-          <h1 align="left"><?php _e('Sitewide Notice WP' , 'sitewide-notice-wp'); ?></h1> <hr/>
+          <h1 align="left"><?php _e('Sitewide Notice Event WP' , 'sitewide-notice-wp'); ?></h1> <hr/>
 
             <form action="" method="POST">
             <table class="form-table">
               <tr valign="top">
                 <th scope="row" width="50%">
-                    <label for="active"><?php _e( 'Show Banner', 'sitewide-notice-wp' ); ?></label>
+                    <label for="active"><?php _e( 'Banner Enabled', 'sitewide-notice-wp' ); ?></label>
                 </th>
                 <td width="50%">
                 <input type="checkbox" name="active" <?php if( isset( $values['active'] ) && ! empty( $values['active'] ) ){ echo 'checked'; } ?> />
@@ -161,41 +162,57 @@ class SiteWide_Notice_WP_Settings{
                 <td><input type="checkbox" name="show_on_top" <?php if( isset( $values['show_on_top'] ) && ! empty( $values['show_on_top'] ) ) { echo 'checked'; } ?>/></td>
               </tr>
 
-              <?php if( defined( 'PMPRO_VERSION' ) ) { ?>
-                <tr>
-                  <th scope="row">
-                  <label for="show_for_members"><?php _e( 'Display Banner For PMPro Members', 'sitewide-notice-wp' ); ?></label>
-                  </th>
-                  <td>
-                     <input type="checkbox" name="show_for_members" <?php if( isset( $values['show_for_members'] ) && ! empty( $values['show_for_members'] ) ){ echo 'checked'; } ?> />
-                  </td>
-                </tr>
-              <?php } ?>
-
               <tr>
               <th scope="row">
-                 <label for="background-color"><?php _e( 'Background Color', 'sitewide-notice-wp' ); ?></label>
+                 <label for="background-color-today"><?php _e( 'Background Color - Current Day', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                 <input type="text" name="background-color" class="color-picker" data-alpha="true" value="<?php echo $values['background_color']; ?>"/>
+                 <input type="text" name="background-color-today" class="color-picker" data-alpha="true" value="<?php echo $values['background_color_today']; ?>"/>
               </td>
               </tr>
 
              <tr>
               <th scope="row">
-                <label for="font-color"><?php _e( 'Font Color', 'sitewide-notice-wp' ); ?></label>
+                <label for="font-color-today"><?php _e( 'Font Color - Current Day', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                <input type="text" name="font-color" class="color-picker" data-alpha="true" value="<?php echo $values['font_color']; ?>"/>
+                <input type="text" name="font-color-today" class="color-picker" data-alpha="true" value="<?php echo $values['font_color_today']; ?>"/>
               </td>
               </tr>
 
               <tr>
               <th scope="row">
-                <label for="message" class="col-sm-2 control-label"><?php _e('Message:', 'sitewide-notice-wp'); ?> </label>
+                 <label for="background-color-tomorrow"><?php _e( 'Background Color - Tomorrow Only', 'sitewide-notice-wp' ); ?></label>
               </th>
               <td>
-                <textarea name="message" cols="40" rows="5" ><?php echo stripcslashes( $values['message'] ); ?></textarea>
+                 <input type="text" name="background-color-tomorrow" class="color-picker" data-alpha="true" value="<?php echo $values['background_color_tomorrow']; ?>"/>
+              </td>
+              </tr>
+
+             <tr>
+              <th scope="row">
+                <label for="font-color-tomorrow"><?php _e( 'Font Color - Tomorrow Only', 'sitewide-notice-wp' ); ?></label>
+              </th>
+              <td>
+                <input type="text" name="font-color-tomorrow" class="color-picker" data-alpha="true" value="<?php echo $values['font_color_tomorrow']; ?>"/>
+              </td>
+              </tr>
+
+              <tr>
+              <th scope="row">
+                <label for="events" class="col-sm-2 control-label"><?php _e('Events:', 'sitewide-notice-wp'); ?> </label>
+              </th>
+              <td>
+                <select name="events[]" multiple><?php 
+                  $cats = get_terms(TribeEvents::TAXONOMY, array('hide_empty' => 0));
+                  foreach ($cats as $cat) {
+                    $selected = "";
+                    if (in_array($cat->slug, $values['events'])) {
+                      $selected = "selected=\"selected\"";
+                    }
+                    echo "<option value=".$cat->slug." $selected>".$cat->name."</option>";
+                  }
+                ?></select>
               </td>
               </tr>
 
@@ -223,4 +240,4 @@ class SiteWide_Notice_WP_Settings{
     }
 } //end class
 
-$sitewide_notice_settings = new SiteWide_Notice_WP_Settings();
+$sitewide_notice_settings = new SiteWide_Notice_Event_WP_Settings();
